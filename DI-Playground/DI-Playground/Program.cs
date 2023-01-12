@@ -59,6 +59,12 @@ namespace DI_Playground
             _log = log;
         }
 
+        public Car(Engine engine)
+        {
+            _engine = engine;
+            _log = new EmailLog();
+        }
+
         public void Go()
         {
             _engine.Ahead(100);
@@ -71,12 +77,10 @@ namespace DI_Playground
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<EmailLog>()
-                .As<ILog>()
-                .As<IConsole>();
-            builder.RegisterType<ConsoleLog>().As<ILog>().AsSelf().PreserveExistingDefaults();
+            builder.RegisterType<ConsoleLog>().As<ILog>();
             builder.RegisterType<Engine>();
-            builder.RegisterType<Car>();
+            builder.RegisterType<Car>()
+                .UsingConstructor(typeof(Engine));
 
             var container = builder.Build();
 
