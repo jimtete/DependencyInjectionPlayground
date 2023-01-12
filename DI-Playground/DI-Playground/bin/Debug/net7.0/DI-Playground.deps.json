@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "DI-Playground/1.0.0": {
+        "runtime": {
+          "DI-Playground.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "DI-Playground/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

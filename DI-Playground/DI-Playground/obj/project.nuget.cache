@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "WI9Cx6CHpIQMxJmE8yQ4IsbLbbGAOOFEt1NgBy4KSqtbRCjG7pPyfTCMleZOGyzyZkmm2yPnChoXCKwbOaJY6w==",
+  "success": true,
+  "projectFilePath": "/home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/DI-Playground.csproj",
+  "expectedPackageFiles": [
+    "/home/ADDC/jimtete/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.1/microsoft.aspnetcore.app.ref.7.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
