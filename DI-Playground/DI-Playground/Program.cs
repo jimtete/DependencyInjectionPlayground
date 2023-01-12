@@ -42,6 +42,12 @@ namespace DI_Playground
             _id = new Random().Next();
         }
 
+        public Engine(ILog log, int id)
+        {
+            _log = log;
+            _id = id;
+        }
+
         public void Ahead(int power)
         {
             _log.Write($"Engine [{_id}] ahead {power}");
@@ -77,14 +83,13 @@ namespace DI_Playground
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            //builder.RegisterType<ConsoleLog>().As<ILog>();
+            builder.RegisterType<ConsoleLog>().As<ILog>();
 
-            var log = new ConsoleLog();
-            builder.RegisterInstance(log).As<ILog>();
+            builder.Register(c =>
+                new Engine(c.Resolve<ILog>(), 123));
             
-            builder.RegisterType<Engine>();
-            builder.RegisterType<Car>()
-                .UsingConstructor(typeof(Engine));
+            //builder.RegisterType<Engine>();
+            builder.RegisterType<Car>();
 
             var container = builder.Build();
 
