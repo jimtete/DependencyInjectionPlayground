@@ -9,11 +9,25 @@ namespace DI_Playground
         void Write(string message);
     }
 
-    public class ConsoleLog : ILog
+    public interface IConsole
+    {
+        
+    }
+
+    public class ConsoleLog : ILog 
     {
         public void Write(string message)
         {
             Console.WriteLine(message);
+        }
+    }
+
+    public class EmailLog : ILog, IConsole
+    {
+        private const string AdminEmail = "admin@foo.com";
+        public void Write(string message)
+        {
+            Console.WriteLine($"Email sent to {AdminEmail} : {message}");
         }
     }
 
@@ -57,16 +71,16 @@ namespace DI_Playground
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<ConsoleLog>().As<ILog>().AsSelf();
+            builder.RegisterType<EmailLog>()
+                .As<ILog>()
+                .As<IConsole>();
+            builder.RegisterType<ConsoleLog>().As<ILog>().AsSelf().PreserveExistingDefaults();
             builder.RegisterType<Engine>();
             builder.RegisterType<Car>();
 
             var container = builder.Build();
 
-            var log = container.Resolve<ConsoleLog>();
-
             var car = container.Resolve<Car>();
-            
             car.Go();
         }
     }
