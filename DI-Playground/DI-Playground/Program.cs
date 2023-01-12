@@ -83,18 +83,14 @@ namespace DI_Playground
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<ConsoleLog>().As<ILog>();
 
-            builder.Register(c =>
-                new Engine(c.Resolve<ILog>(), 123));
+            // IList<T> --> List<T>
+            builder.RegisterGeneric(typeof(List<>)).As(typeof(IList<>));
             
-            //builder.RegisterType<Engine>();
-            builder.RegisterType<Car>();
-
             var container = builder.Build();
 
-            var car = container.Resolve<Car>();
-            car.Go();
+            var myList = container.Resolve<IList<int>>();
+            Console.WriteLine(myList.GetType());
         }
     }
 }
