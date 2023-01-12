@@ -95,6 +95,7 @@ namespace DI_Playground
 
             var car = container.Resolve<Car>();
             car.Go();
+            ;
         }
     }
 }
