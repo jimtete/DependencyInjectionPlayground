@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Autofac;
 
 namespace DI_Playground
 {
@@ -55,9 +56,17 @@ namespace DI_Playground
     {
         public static void Main(string[] args)
         {
-            var log = new ConsoleLog();
-            var engine = new Engine(log);
-            var car = new Car(engine, log);
+            var builder = new ContainerBuilder();
+            builder.RegisterType<ConsoleLog>().As<ILog>().AsSelf();
+            builder.RegisterType<Engine>();
+            builder.RegisterType<Car>();
+
+            var container = builder.Build();
+
+            var log = container.Resolve<ConsoleLog>();
+
+            var car = container.Resolve<Car>();
+            
             car.Go();
         }
     }

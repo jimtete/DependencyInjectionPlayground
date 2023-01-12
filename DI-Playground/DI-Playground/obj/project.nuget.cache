@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "WI9Cx6CHpIQMxJmE8yQ4IsbLbbGAOOFEt1NgBy4KSqtbRCjG7pPyfTCMleZOGyzyZkmm2yPnChoXCKwbOaJY6w==",
+  "dgSpecHash": "mrgfUtrN+yiGF5dRlGmTNM9kNRirYnjf221r9WjHQTPhzwvCvCVnrNooUfpSIrwq7MZ9aroYMVTxCiK5KXxFMQ==",
   "success": true,
   "projectFilePath": "/home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/DI-Playground.csproj",
   "expectedPackageFiles": [
+    "/home/ADDC/jimtete/.nuget/packages/autofac/6.5.0/autofac.6.5.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/system.diagnostics.diagnosticsource/4.7.1/system.diagnostics.diagnosticsource.4.7.1.nupkg.sha512",
     "/home/ADDC/jimtete/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.1/microsoft.aspnetcore.app.ref.7.0.1.nupkg.sha512"
   ],
   "logs": []
