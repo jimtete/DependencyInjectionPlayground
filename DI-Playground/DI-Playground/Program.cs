@@ -77,7 +77,11 @@ namespace DI_Playground
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<ConsoleLog>().As<ILog>();
+            //builder.RegisterType<ConsoleLog>().As<ILog>();
+
+            var log = new ConsoleLog();
+            builder.RegisterInstance(log).As<ILog>();
+            
             builder.RegisterType<Engine>();
             builder.RegisterType<Car>()
                 .UsingConstructor(typeof(Engine));
