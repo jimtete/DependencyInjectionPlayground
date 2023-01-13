@@ -99,6 +99,7 @@ namespace DI_Playground
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
+            
 
             // named parameter.
             /*builder.RegisterType<SMSLog>()
