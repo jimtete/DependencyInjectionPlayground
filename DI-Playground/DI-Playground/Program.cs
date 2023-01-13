@@ -93,47 +93,55 @@ namespace DI_Playground
             Console.WriteLine($"SMS to {_phoneNumber} : {message}");
         }
     }
+
+    public class Parent
+    {
+        public override string ToString()
+        {
+            return "I am your father";
+        }
+    }
+
+    public class Child
+    {
+        public string Name { get; set; }
+        public Parent Parent { get; set; }
+
+        public void SetParent(Parent parent)
+        {
+            Parent = parent;
+        }
+    }
     
     internal class Program
     {
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
+            builder.RegisterType<Parent>();
             
+            //builder.RegisterType<Child>().PropertiesAutowired();
 
-            // named parameter.
-            /*builder.RegisterType<SMSLog>()
-                .As<ILog>()
-                .WithParameter("phoneNumber", "6948336420");*/
+            /*builder.RegisterType<Child>()
+                .WithProperty("Parent", new Parent());*/
+
+            /*builder.Register(c =>
+            {
+                var child = new Child();
+                child.SetParent(c.Resolve<Parent>());
+                return child;
+            });*/
+
+            builder.RegisterType<Child>()
+                .OnActivated(e =>
+                {
+                    var p = e.Context.Resolve<Parent>();
+                    e.Instance.SetParent(new Parent());
+                });
             
-            //typed parameter.
-            /*builder.RegisterType<SMSLog>()
-                .As<ILog>()
-                .WithParameter(new TypedParameter(typeof(string), "6948336420"));*/
-            
-            //resolved parameter.
-            /*builder.RegisterType<SMSLog>()
-                .As<ILog>()
-                .WithParameter(
-                    new ResolvedParameter(
-                        (pi, ctx) => pi.ParameterType == typeof(string) && pi.Name == "phoneNumber",
-                        (pi, ctx) => "6948336420"
-                    )
-                );
             var container = builder.Build();
-            var log = container.Resolve<ILog>();
-            log.Write("test massage.");*/
-
-            Random random = new Random();
-            builder.Register((c, p)
-                => new SMSLog(p.Named<string>("phoneNumber")))
-                .As<ILog>();
-
-            Console.WriteLine("About to build container");
-            var container = builder.Build();
-
-            var log = container.Resolve<ILog>(new NamedParameter("phoneNumber", random.Next().ToString()));
-            log.Write("testing");
+            var parent = container.Resolve<Child>().Parent;
+            Console.WriteLine(parent);
         }
     }
 }
