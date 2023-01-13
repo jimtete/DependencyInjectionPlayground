@@ -5,30 +5,36 @@ using Autofac.Core;
 
 namespace DI_Playground
 {
-    public class Service
+    public class Entity
     {
-        public string DoSomething(int value)
-        {
-            return $"I have {value}";
-        }
-    }
-
-    public class DomainObject
-    {
-        private Service _service;
-        private int _value;
+        public delegate Entity Factory();
         
-        public delegate DomainObject Factory(int value);
+        private static Random _random = new Random();
+        private int _number;
 
-        public DomainObject(Service service, int value)
+        public Entity()
         {
-            _service = service;
-            _value = value;
+            _number = _random.Next();
         }
 
         public override string ToString()
         {
-            return _service.DoSomething(_value);
+            return "tester: " + _number;
+        }
+    }
+
+    public class ViewModel
+    {
+        private readonly Entity.Factory _entityFactory;
+        public ViewModel(Entity.Factory entityFactory)
+        {
+            _entityFactory = entityFactory;
+        }
+
+        public void Method()
+        {
+            var entity = _entityFactory();
+            Console.WriteLine(entity);
         }
     }
 
@@ -37,19 +43,13 @@ namespace DI_Playground
         public static void Main(string[] args)
         {
             var cb = new ContainerBuilder();
-            cb.RegisterType<Service>();
-            cb.RegisterType<DomainObject>();
+            cb.RegisterType<Entity>().InstancePerDependency();
+            cb.RegisterType<ViewModel>();
 
             var container = cb.Build();
-            var dobj = container.Resolve<DomainObject>(
-                new PositionalParameter(1, 42));
-            Console.WriteLine(dobj);
-            
-            /**/
-            
-            var factory = container.Resolve<DomainObject.Factory>();
-            var dobj2 = factory(42);
-            Console.WriteLine(dobj2);
+            var vm = container.Resolve<ViewModel>();
+            vm.Method();
+            vm.Method();
         }
     }
 }
