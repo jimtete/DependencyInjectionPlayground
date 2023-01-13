@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Autofac;
+using Autofac.Core;
 
 namespace DI_Playground
 {
@@ -77,6 +78,21 @@ namespace DI_Playground
             _log.Write("Car going forward...");
         }
     }
+
+    public class SMSLog : ILog
+    {
+        private string _phoneNumber;
+
+        public SMSLog(string phoneNumber)
+        {
+            _phoneNumber = phoneNumber;
+        }
+        
+        public void Write(string message)
+        {
+            Console.WriteLine($"SMS to {_phoneNumber} : {message}");
+        }
+    }
     
     internal class Program
     {
@@ -84,13 +100,39 @@ namespace DI_Playground
         {
             var builder = new ContainerBuilder();
 
-            // IList<T> --> List<T>
-            builder.RegisterGeneric(typeof(List<>)).As(typeof(IList<>));
+            // named parameter.
+            /*builder.RegisterType<SMSLog>()
+                .As<ILog>()
+                .WithParameter("phoneNumber", "6948336420");*/
             
+            //typed parameter.
+            /*builder.RegisterType<SMSLog>()
+                .As<ILog>()
+                .WithParameter(new TypedParameter(typeof(string), "6948336420"));*/
+            
+            //resolved parameter.
+            /*builder.RegisterType<SMSLog>()
+                .As<ILog>()
+                .WithParameter(
+                    new ResolvedParameter(
+                        (pi, ctx) => pi.ParameterType == typeof(string) && pi.Name == "phoneNumber",
+                        (pi, ctx) => "6948336420"
+                    )
+                );
+            var container = builder.Build();
+            var log = container.Resolve<ILog>();
+            log.Write("test massage.");*/
+
+            Random random = new Random();
+            builder.Register((c, p)
+                => new SMSLog(p.Named<string>("phoneNumber")))
+                .As<ILog>();
+
+            Console.WriteLine("About to build container");
             var container = builder.Build();
 
-            var myList = container.Resolve<IList<int>>();
-            Console.WriteLine(myList.GetType());
+            var log = container.Resolve<ILog>(new NamedParameter("phoneNumber", random.Next().ToString()));
+            log.Write("testing");
         }
     }
 }
