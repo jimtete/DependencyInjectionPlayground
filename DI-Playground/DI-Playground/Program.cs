@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Autofac;
 using Autofac.Core;
+using Module = Autofac.Module;
 
 namespace DI_Playground
 {
@@ -114,22 +115,25 @@ namespace DI_Playground
         }
     }
     
+    public class ParentChildModule : Module
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder.RegisterType<Parent>();
+            builder.Register(c => new Child() { Parent = c.Resolve<Parent>() });
+        }
+    }
+    
     internal class Program
     {
         public static void Main(string[] args)
         {
-            var assembly = Assembly.GetExecutingAssembly();
             var builder = new ContainerBuilder();
-            builder.RegisterAssemblyTypes(assembly)
-                .Where(t => t.Name.EndsWith("Log"))
-                .Except<SMSLog>()
-                .Except<ConsoleLog>(c => c.As<ILog>().SingleInstance())
-                .AsSelf();
+            builder.RegisterAssemblyModules(typeof(Program).Assembly);
+            //does the same thing: builder.RegisterAssemblyModules<ParentChildModule>(typeof(Program).Assembly);
 
-            builder.RegisterAssemblyTypes(assembly)
-                .Except<SMSLog>()
-                .Where(t => t.Name.EndsWith("Log"))
-                .As(t => t.GetInterfaces()[0]);
+            var container = builder.Build();
+            Console.WriteLine(container.Resolve<Child>().Parent);
         }
     }
 }
