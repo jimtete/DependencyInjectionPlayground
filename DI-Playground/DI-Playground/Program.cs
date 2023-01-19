@@ -10,16 +10,21 @@ using Module = Autofac.Module;
 
 namespace DI_Playground
 {
-    public interface ILog : IDisposable
+    public interface ILog
     {
         void Write(string message);
     }
 
-    public class ConsoleLog : ILog 
+    public interface IConsole
+    {
+        
+    }
+
+    public class ConsoleLog : ILog, IConsole 
     {
         public ConsoleLog()
         {
-            Console.WriteLine($"Console log created at {DateTime.Now.Ticks}");
+            Console.WriteLine("Creating a console log!");
         }
         public void Write(string message)
         {
@@ -29,6 +34,39 @@ namespace DI_Playground
         public void Dispose()
         {
             Console.WriteLine("Console logger no longer required");
+        }
+    }
+
+    public class EmailLog : ILog
+    {
+        private const string _adminEmail = "admin@foo.com";
+
+        public void Write(string message)
+        {
+            Console.WriteLine($"Email sent to {_adminEmail} : {message}");
+        }
+    }
+
+    public class Engine
+    {
+        private ILog _log;
+        private int _id;
+
+        public Engine(ILog log)
+        {
+            _log = log;
+            _id = new Random().Next();
+        }
+
+        public Engine(ILog log, int id)
+        {
+            _log = log;
+            _id = id;
+        }
+
+        public void Ahead(int power)
+        {
+            _log.Write($"Engine [{_id}] ahead {power}");
         }
     }
     
@@ -41,35 +79,61 @@ namespace DI_Playground
             _phoneNumber = phoneNumber;
         }
 
-        public void Dispose()
-        {
-            
-        }
-        
         public void Write(string message)
         {
             Console.WriteLine($"SMS to {_phoneNumber} : {message}");
         }
     }
 
-    public class Settings
+    public class Car
     {
-        public string LogMode { get; set; }
-        //
-    }
+        private Engine _engine;
+        private ILog _log;
 
-    public class Reporting
-    {
-        private IIndex<string, ILog> _logs;
-
-        public Reporting(IIndex<string, ILog> logs)
+        public Car(Engine engine)
         {
-            _logs = logs;
+            _engine = engine;
+            _log = new EmailLog();
         }
 
-        public void Report()
+        public Car(Engine engine, ILog log)
         {
-            _logs["sms"].Write("Starting report output");
+            _engine = engine;
+            _log = log;
+        }
+
+        public void Go()
+        {
+            _engine.Ahead(100);
+            _log.Write("car going forward...");
+        }
+    }
+
+    public class Parent
+    {
+        public override string ToString()
+        {
+            return "I am your father";
+        }
+    }
+
+    public class Child
+    {
+        public string Name { get; set; }
+        public Parent Parent { get; set; }
+
+        public void SetParent(Parent parent)
+        {
+            Parent = parent;
+        }
+    }
+
+    public class ParentChildModule : Module
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder.RegisterType<Parent>();
+            builder.Register(c => new Child() { Parent = c.Resolve<Parent>() });
         }
     }
     
@@ -78,14 +142,29 @@ namespace DI_Playground
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<ConsoleLog>().Keyed<ILog>("cmd");
-            builder.Register(c => new SMSLog("+123456")).Keyed<ILog>("sms");
-            builder.RegisterType<Reporting>();
-            using (var c = builder.Build())
+            builder.RegisterType<ConsoleLog>()
+                .InstancePerMatchingLifetimeScope("foo")
+                ;
+
+            var container = builder.Build();
+
+            using (var scope1 = container.BeginLifetimeScope("foo"))
             {
-                c.Resolve<Reporting>().Report();
+                for (int i = 0; i < 3; i++)
+                {
+                    scope1.Resolve<ConsoleLog>();
+                }
+                
+                using (var scope2 = scope1.BeginLifetimeScope())
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        scope2.Resolve<ConsoleLog>();
+                    }
+                }
             }
 
+            
         }
     }
 }
