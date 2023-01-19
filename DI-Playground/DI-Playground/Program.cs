@@ -154,49 +154,32 @@ namespace DI_Playground
             builder.Register(c => new Child() { Parent = c.Resolve<Parent>() });
         }
     }
+
+    public class MyClass : IStartable
+    {
+        public MyClass()
+        {
+            Console.WriteLine("My class ctor");
+        }
+        public void Start()
+        {
+            Console.WriteLine("Container being built");
+        }
+    }
     
     internal class Program
     {
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<Parent>();
-            builder.RegisterType<Child>()
-                .OnActivating(a =>
-                {
-                    Console.WriteLine("Child activating");
-                    //a.Instance.Parent = a.Context.Resolve<Parent>();
-                    
-                    a.ReplaceInstance(new BadChild());
-                })
-                .OnActivated(a =>
-                {
-                    Console.WriteLine("Child activated");
-                })
-                .OnRelease(a =>
-                {
-                    Console.WriteLine("Child is about to be removed");
-                });
+            builder.RegisterType<MyClass>()
+                .AsSelf()
+                .As<IStartable>()
+                .SingleInstance();
 
-            /*builder.RegisterType<ConsoleLog>().As<ILog>()
-                .OnActivating(a =>
-                {
-                    a.ReplaceInstance(new SMSLog("+123456"));
-                });*/
+            var container = builder.Build();
 
-            builder.RegisterType<ConsoleLog>().AsSelf();
-            builder.Register<ILog>(c => c.Resolve<ConsoleLog>())
-                .OnActivating(a => a.ReplaceInstance(new SMSLog("+123456")));
-            using (var scope = builder.Build().BeginLifetimeScope())
-            {
-                var child = scope.Resolve<Child>();
-                var parent = child.Parent;
-                Console.WriteLine(child);
-                Console.WriteLine(parent);
-
-                var log = scope.Resolve<ILog>();
-                log.Write("Testing");
-            }
+            container.Resolve<MyClass>();
         }
     }
 }
