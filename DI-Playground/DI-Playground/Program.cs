@@ -52,21 +52,19 @@ namespace DI_Playground
 
     public class Reporting
     {
-        private Func<ConsoleLog> _consoleLog;
-        private Func<string, SMSLog> _smsLog;
+        private IList<ILog> _logs;
 
-        public Reporting(Func<ConsoleLog> consoleLog, Func<string,SMSLog> smsLog)
+        public Reporting(IList<ILog> logs)
         {
-            _consoleLog = consoleLog;
-            _smsLog = smsLog;
+            _logs = logs;
         }
 
         public void Report()
         {
-            _consoleLog().Write("Reporting to console");
-            _consoleLog().Write("And again");
-            
-            _smsLog("6948336422").Write("Texting admins");
+            foreach (var log in _logs)
+            {
+                log.Write($"Hello, this is {log.GetType().Name}");
+            }
         }
     }
     
@@ -74,13 +72,9 @@ namespace DI_Playground
     {
         public static void Main(string[] args)
         {
-            new Lazy<ConsoleLog>(() => new ConsoleLog());
-            
-            
-            
             var builder = new ContainerBuilder();
-            builder.RegisterType<ConsoleLog>();
-            builder.RegisterType<SMSLog>();
+            builder.RegisterType<ConsoleLog>().As<ILog>();
+            builder.Register(c => new SMSLog("+123456")).As<ILog>();
             builder.RegisterType<Reporting>();
             using (var c = builder.Build())
             {
