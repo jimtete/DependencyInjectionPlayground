@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Autofac;
 using Autofac.Core;
+using Autofac.Features.OwnedInstances;
 using Module = Autofac.Module;
 
 namespace DI_Playground
@@ -51,9 +52,9 @@ namespace DI_Playground
 
     public class Reporting
     {
-        private Lazy<ConsoleLog> _log;
+        private Owned<ConsoleLog> _log;
 
-        public Reporting(Lazy<ConsoleLog> log)
+        public Reporting(Owned<ConsoleLog> log)
         {
             if (log == null)
             {
@@ -63,9 +64,10 @@ namespace DI_Playground
             Console.WriteLine("Reporting component created");
         }
 
-        public void Report()
+        public void ReportOnce()
         {
             _log.Value.Write("Log started");
+            _log.Dispose();
         }
     }
     
@@ -80,7 +82,8 @@ namespace DI_Playground
             builder.RegisterType<Reporting>();
             using (var c = builder.Build())
             {
-                c.Resolve<Reporting>().Report();
+                c.Resolve<Reporting>().ReportOnce();
+                Console.WriteLine("Done reporting");
             }
         }
     }
