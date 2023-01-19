@@ -7,80 +7,28 @@ using Module = Autofac.Module;
 
 namespace DI_Playground
 {
-    public interface ILog
+    public interface ILog : IDisposable
     {
         void Write(string message);
     }
 
-    public interface IConsole
-    {
-        
-    }
-
     public class ConsoleLog : ILog 
     {
+        public ConsoleLog()
+        {
+            Console.WriteLine($"Console log created at {DateTime.Now.Ticks}");
+        }
         public void Write(string message)
         {
             Console.WriteLine(message);
         }
-    }
 
-    public class EmailLog : ILog, IConsole
-    {
-        private const string AdminEmail = "admin@foo.com";
-        public void Write(string message)
+        public void Dispose()
         {
-            Console.WriteLine($"Email sent to {AdminEmail} : {message}");
+            Console.WriteLine("Console logger no longer required");
         }
     }
-
-    public class Engine
-    {
-        private ILog _log;
-        private int _id;
-
-        public Engine(ILog log)
-        {
-            _log = log;
-            _id = new Random().Next();
-        }
-
-        public Engine(ILog log, int id)
-        {
-            _log = log;
-            _id = id;
-        }
-
-        public void Ahead(int power)
-        {
-            _log.Write($"Engine [{_id}] ahead {power}");
-        }
-    }
-
-    public class Car
-    {
-        private Engine _engine;
-        private ILog _log;
-
-        public Car(Engine engine, ILog log)
-        {
-            _engine = engine;
-            _log = log;
-        }
-
-        public Car(Engine engine)
-        {
-            _engine = engine;
-            _log = new EmailLog();
-        }
-
-        public void Go()
-        {
-            _engine.Ahead(100);
-            _log.Write("Car going forward...");
-        }
-    }
-
+    
     public class SMSLog : ILog
     {
         private string _phoneNumber;
@@ -89,6 +37,11 @@ namespace DI_Playground
         {
             _phoneNumber = phoneNumber;
         }
+
+        public void Dispose()
+        {
+            
+        }
         
         public void Write(string message)
         {
@@ -96,31 +49,23 @@ namespace DI_Playground
         }
     }
 
-    public class Parent
+    public class Reporting
     {
-        public override string ToString()
-        {
-            return "I am your father";
-        }
-    }
+        private Lazy<ConsoleLog> _log;
 
-    public class Child
-    {
-        public string Name { get; set; }
-        public Parent Parent { get; set; }
-
-        public void SetParent(Parent parent)
+        public Reporting(Lazy<ConsoleLog> log)
         {
-            Parent = parent;
+            if (log == null)
+            {
+                throw new ArgumentNullException(paramName: nameof(log));
+            }
+            _log = log;
+            Console.WriteLine("Reporting component created");
         }
-    }
-    
-    public class ParentChildModule : Module
-    {
-        protected override void Load(ContainerBuilder builder)
+
+        public void Report()
         {
-            builder.RegisterType<Parent>();
-            builder.Register(c => new Child() { Parent = c.Resolve<Parent>() });
+            _log.Value.Write("Log started");
         }
     }
     
@@ -128,12 +73,15 @@ namespace DI_Playground
     {
         public static void Main(string[] args)
         {
+            new Lazy<ConsoleLog>(() => new ConsoleLog());
+            
             var builder = new ContainerBuilder();
-            builder.RegisterAssemblyModules(typeof(Program).Assembly);
-            //does the same thing: builder.RegisterAssemblyModules<ParentChildModule>(typeof(Program).Assembly);
-
-            var container = builder.Build();
-            Console.WriteLine(container.Resolve<Child>().Parent);
+            builder.RegisterType<ConsoleLog>();
+            builder.RegisterType<Reporting>();
+            using (var c = builder.Build())
+            {
+                c.Resolve<Reporting>().Report();
+            }
         }
     }
 }
