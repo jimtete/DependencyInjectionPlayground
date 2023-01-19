@@ -122,9 +122,27 @@ namespace DI_Playground
         public string Name { get; set; }
         public Parent Parent { get; set; }
 
+        public Child()
+        {
+            Console.WriteLine("Child being created");
+        }
+        
         public void SetParent(Parent parent)
         {
             Parent = parent;
+        }
+
+        public override string ToString()
+        {
+            return "Hi there";
+        }
+    }
+
+    class BadChild : Child
+    {
+        public override string ToString()
+        {
+            return "I Hate you";
         }
     }
 
@@ -142,12 +160,42 @@ namespace DI_Playground
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            //builder.RegisterType<ConsoleLog>();
-            builder.RegisterInstance(new ConsoleLog());
-            var container = builder.Build();
-            using (var scope = container.BeginLifetimeScope())
+            builder.RegisterType<Parent>();
+            builder.RegisterType<Child>()
+                .OnActivating(a =>
+                {
+                    Console.WriteLine("Child activating");
+                    //a.Instance.Parent = a.Context.Resolve<Parent>();
+                    
+                    a.ReplaceInstance(new BadChild());
+                })
+                .OnActivated(a =>
+                {
+                    Console.WriteLine("Child activated");
+                })
+                .OnRelease(a =>
+                {
+                    Console.WriteLine("Child is about to be removed");
+                });
+
+            /*builder.RegisterType<ConsoleLog>().As<ILog>()
+                .OnActivating(a =>
+                {
+                    a.ReplaceInstance(new SMSLog("+123456"));
+                });*/
+
+            builder.RegisterType<ConsoleLog>().AsSelf();
+            builder.Register<ILog>(c => c.Resolve<ConsoleLog>())
+                .OnActivating(a => a.ReplaceInstance(new SMSLog("+123456")));
+            using (var scope = builder.Build().BeginLifetimeScope())
             {
-                scope.Resolve<ConsoleLog>();
+                var child = scope.Resolve<Child>();
+                var parent = child.Parent;
+                Console.WriteLine(child);
+                Console.WriteLine(parent);
+
+                var log = scope.Resolve<ILog>();
+                log.Write("Testing");
             }
         }
     }
