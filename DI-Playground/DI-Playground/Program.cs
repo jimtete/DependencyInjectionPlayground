@@ -52,22 +52,21 @@ namespace DI_Playground
 
     public class Reporting
     {
-        private Owned<ConsoleLog> _log;
+        private Func<ConsoleLog> _consoleLog;
+        private Func<string, SMSLog> _smsLog;
 
-        public Reporting(Owned<ConsoleLog> log)
+        public Reporting(Func<ConsoleLog> consoleLog, Func<string,SMSLog> smsLog)
         {
-            if (log == null)
-            {
-                throw new ArgumentNullException(paramName: nameof(log));
-            }
-            _log = log;
-            Console.WriteLine("Reporting component created");
+            _consoleLog = consoleLog;
+            _smsLog = smsLog;
         }
 
-        public void ReportOnce()
+        public void Report()
         {
-            _log.Value.Write("Log started");
-            _log.Dispose();
+            _consoleLog().Write("Reporting to console");
+            _consoleLog().Write("And again");
+            
+            _smsLog("6948336422").Write("Texting admins");
         }
     }
     
@@ -77,13 +76,15 @@ namespace DI_Playground
         {
             new Lazy<ConsoleLog>(() => new ConsoleLog());
             
+            
+            
             var builder = new ContainerBuilder();
             builder.RegisterType<ConsoleLog>();
+            builder.RegisterType<SMSLog>();
             builder.RegisterType<Reporting>();
             using (var c = builder.Build())
             {
-                c.Resolve<Reporting>().ReportOnce();
-                Console.WriteLine("Done reporting");
+                c.Resolve<Reporting>().Report();
             }
         }
     }
