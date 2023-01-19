@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Autofac;
 using Autofac.Core;
+using Autofac.Features.Indexed;
 using Autofac.Features.Metadata;
 using Autofac.Features.OwnedInstances;
 using Module = Autofac.Module;
@@ -59,22 +60,16 @@ namespace DI_Playground
 
     public class Reporting
     {
-        private Meta<ConsoleLog, Settings> _log;
+        private IIndex<string, ILog> _logs;
 
-        public Reporting(Meta<ConsoleLog, Settings> log)
+        public Reporting(IIndex<string, ILog> logs)
         {
-            _log = log;
+            _logs = logs;
         }
 
         public void Report()
         {
-            _log.Value.Write("Starting report");
-
-            //if (_log.Metadata["mode"] as string == "verbose")
-            if (_log.Metadata.LogMode == "verbose")
-            {
-                _log.Value.Write($"VERBOSE MODE: Logger started on {DateTime.Now}");
-            }
+            _logs["sms"].Write("Starting report output");
         }
     }
     
@@ -83,15 +78,14 @@ namespace DI_Playground
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            //builder.RegisterType<ConsoleLog>().WithMetadata("mode","verbose");
-            builder.RegisterType<ConsoleLog>()
-                .WithMetadata<Settings>(c => c.For(
-                    x => x.LogMode, "verbose"));
+            builder.RegisterType<ConsoleLog>().Keyed<ILog>("cmd");
+            builder.Register(c => new SMSLog("+123456")).Keyed<ILog>("sms");
             builder.RegisterType<Reporting>();
             using (var c = builder.Build())
             {
                 c.Resolve<Reporting>().Report();
             }
+
         }
     }
 }
