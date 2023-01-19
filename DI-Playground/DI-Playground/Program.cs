@@ -20,7 +20,7 @@ namespace DI_Playground
         
     }
 
-    public class ConsoleLog : ILog, IConsole 
+    public class ConsoleLog : ILog, IConsole, IDisposable
     {
         public ConsoleLog()
         {
@@ -142,29 +142,13 @@ namespace DI_Playground
         public static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<ConsoleLog>()
-                .InstancePerMatchingLifetimeScope("foo")
-                ;
-
+            //builder.RegisterType<ConsoleLog>();
+            builder.RegisterInstance(new ConsoleLog());
             var container = builder.Build();
-
-            using (var scope1 = container.BeginLifetimeScope("foo"))
+            using (var scope = container.BeginLifetimeScope())
             {
-                for (int i = 0; i < 3; i++)
-                {
-                    scope1.Resolve<ConsoleLog>();
-                }
-                
-                using (var scope2 = scope1.BeginLifetimeScope())
-                {
-                    for (int i = 0; i < 3; i++)
-                    {
-                        scope2.Resolve<ConsoleLog>();
-                    }
-                }
+                scope.Resolve<ConsoleLog>();
             }
-
-            
         }
     }
 }
