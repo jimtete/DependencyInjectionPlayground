@@ -1,37 +1,8 @@
 {
   "defaultAssembly": "DI-Playground",
-  "components" : [
+  "modules" : [
     {
-      "type" : "DI_Playground.Addition",
-      "services" : [
-        {"type" :  "DI_Playground.IOperation"},
-        {"type" :  "DI_Playground.IOtherOperation"}
-      ],
-      "autoActivate" : true,
-      "injectProperties" : true,
-      "instanceScope" : "per-dependency",
-      "metadata" : [
-        {
-          "key" : "extraValue",
-          "value" : 123,
-          "type" : "System.Int32, mscorlib"
-        }
-      ],
-      "ownership": "external",
-      "parameters": {
-        "precision" : 5
-      },
-      "properties" : {
-        "ValueDIctionary" : {
-          "One" : 1,
-          "Two" : 2
-        },
-        "SomeList" : [1,2,3,4]
-      }
-    },
-    {
-      "type" : "DI_Playground.Multiplication",
-      "services" : [{"type" :  "DI_Playground.IOperation"}]
+      "type" : "DI_Playground.CalculationModule"
     }
   ]
 }

@@ -2,6 +2,7 @@
 using Autofac;
 using Autofac.Configuration;
 using Microsoft.Extensions.Configuration;
+using Module = Autofac.Module;
 
 namespace DI_Playground
 {
@@ -23,6 +24,15 @@ namespace DI_Playground
         public float Calculate(float a, float b)
         {
             return a * b;
+        }
+    }
+
+    public class CalculationModule : Module
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder.RegisterType<Multiplication>().As<IOperation>();
+            builder.RegisterType<Addition>().As<IOperation>();
         }
     }
 
