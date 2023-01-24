@@ -1,11 +1,23 @@
 {
   "version": 2,
-  "dgSpecHash": "mrgfUtrN+yiGF5dRlGmTNM9kNRirYnjf221r9WjHQTPhzwvCvCVnrNooUfpSIrwq7MZ9aroYMVTxCiK5KXxFMQ==",
+  "dgSpecHash": "JhK6UA2CmqtcT7EgFI1Vq8UpGLaM5gfER8Af70hRrySlZ31yEDge+7h2TP9cALraFsCblORzl486QzD2CeZ8Mg==",
   "success": true,
   "projectFilePath": "/home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/DI-Playground.csproj",
   "expectedPackageFiles": [
     "/home/ADDC/jimtete/.nuget/packages/autofac/6.5.0/autofac.6.5.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/autofac.configuration/6.0.0/autofac.configuration.6.0.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/microsoft.extensions.configuration/7.0.0/microsoft.extensions.configuration.7.0.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/microsoft.extensions.configuration.abstractions/7.0.0/microsoft.extensions.configuration.abstractions.7.0.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/microsoft.extensions.configuration.binder/2.2.0/microsoft.extensions.configuration.binder.2.2.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/microsoft.extensions.configuration.fileextensions/7.0.0/microsoft.extensions.configuration.fileextensions.7.0.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/microsoft.extensions.configuration.json/7.0.0/microsoft.extensions.configuration.json.7.0.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/microsoft.extensions.fileproviders.abstractions/7.0.0/microsoft.extensions.fileproviders.abstractions.7.0.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/microsoft.extensions.fileproviders.physical/7.0.0/microsoft.extensions.fileproviders.physical.7.0.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/microsoft.extensions.filesystemglobbing/7.0.0/microsoft.extensions.filesystemglobbing.7.0.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/microsoft.extensions.primitives/7.0.0/microsoft.extensions.primitives.7.0.0.nupkg.sha512",
     "/home/ADDC/jimtete/.nuget/packages/system.diagnostics.diagnosticsource/4.7.1/system.diagnostics.diagnosticsource.4.7.1.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/system.text.encodings.web/7.0.0/system.text.encodings.web.7.0.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/system.text.json/7.0.0/system.text.json.7.0.0.nupkg.sha512",
     "/home/ADDC/jimtete/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.1/microsoft.aspnetcore.app.ref.7.0.1.nupkg.sha512"
   ],
   "logs": []

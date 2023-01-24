@@ -1,0 +1,13 @@
+{
+  "defaultAssembly": "DI-Playground",
+  "components" : [
+    {
+      "type" : "DI_Playground.Addition",
+      "services" : [{"type" :  "DI_Playground.IOperation"}]
+    },
+    {
+      "type" : "DI_Playground.Multiplication",
+      "services" : [{"type" :  "DI_Playground.IOperation"}]
+    }
+  ]
+}
