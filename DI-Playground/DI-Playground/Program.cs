@@ -1,66 +1,124 @@
-﻿using System.Reflection;
+﻿using System.Collections.Concurrent;
 using Autofac;
-using Autofac.Configuration;
-using Microsoft.Extensions.Configuration;
-using Module = Autofac.Module;
+using Autofac.Core;
+using Autofac.Core.Activators.Delegate;
+using Autofac.Core.Lifetime;
+using Autofac.Core.Registration;
+using Autofac.Features.ResolveAnything;
 
 namespace DI_Playground
 {
-    public interface IOperation
+    public abstract class BaseHandler
     {
-        float Calculate(float a, float b);
-    }
-
-    public class Addition : IOperation
-    {
-        public float Calculate(float a, float b)
+        public virtual string Handle(string message)
         {
-            return a + b;
+            return "Handled: " + message;
         }
     }
 
-    public class Multiplication : IOperation
+    public class HandlerA : BaseHandler
     {
-        public float Calculate(float a, float b)
+        public override string Handle(string message)
         {
-            return a * b;
+            return "Handled by A: " + message;
+        }
+    }
+    public class HandlerB : BaseHandler
+    {
+        public override string Handle(string message)
+        {
+            return "Handled by B: " + message;
         }
     }
 
-    public class CalculationModule : Module
+    public interface IHandlerFactory
     {
-        protected override void Load(ContainerBuilder builder)
+        T GetHandler<T>() where T : BaseHandler;
+    }
+
+    public class HandlerFactory : IHandlerFactory
+    {
+        public T GetHandler<T>() where T : BaseHandler
         {
-            builder.RegisterType<Multiplication>().As<IOperation>();
-            builder.RegisterType<Addition>().As<IOperation>();
+            return Activator.CreateInstance<T>();
         }
     }
 
+    public class ConsumerA
+    {
+        private HandlerA _handlerA;
+
+        public ConsumerA(HandlerA handlerA)
+        {
+            _handlerA = handlerA;
+        }
+
+        public void DoWork()
+        {
+            Console.WriteLine(_handlerA.Handle("Consumer A"));
+        }
+    }
+    
+    public class ConsumerB
+    {
+        private HandlerB _handlerB;
+
+        public ConsumerB(HandlerB handlerB)
+        {
+            _handlerB = handlerB;
+        }
+
+        public void DoWork()
+        {
+            Console.WriteLine(_handlerB.Handle("Consumer B"));
+        }
+    }
+
+    public class HandlerRegistrationSource : IRegistrationSource
+    {
+        public IEnumerable<IComponentRegistration> RegistrationsFor(
+            Service service,
+            Func<Service,IEnumerable<ServiceRegistration>> registrationAccessor)
+        {
+            var swt = service as IServiceWithType;
+            if (swt == null || swt.ServiceType == null || !swt.ServiceType.IsAssignableTo<BaseHandler>())
+            {
+                yield break;
+            }
+
+            yield return new ComponentRegistration(
+                Guid.NewGuid(),
+                new DelegateActivator(swt.ServiceType, (c, p) =>
+                {
+                    var provider = c.Resolve<IHandlerFactory>();
+                    var method = provider.GetType().GetMethod("GetHandler").MakeGenericMethod(swt.ServiceType);
+                    return method.Invoke(provider, null);
+                }
+            ),
+                new CurrentScopeLifetime(),
+                InstanceSharing.None,
+                InstanceOwnership.OwnedByLifetimeScope,
+                new [] {service},
+                new ConcurrentDictionary<string, object?>());
+        }
+
+        public bool IsAdapterForIndividualComponents => false;
+    }
+    
     public class Program
     {
         static void Main(string[] args)
         {
-            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "./");
-
+            var b = new ContainerBuilder();
+            b.RegisterType<HandlerFactory>().As<IHandlerFactory>();
+            b.RegisterSource(new HandlerRegistrationSource());
+            b.RegisterType<ConsumerA>();
+            b.RegisterType<ConsumerB>();
             
-            Console.WriteLine(Directory.GetCurrentDirectory());
-            var configBuilder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("config.json");
-
-            var configuration = configBuilder.Build();
-            var containerBuilder = new ContainerBuilder();
-            var configModule = new ConfigurationModule(configuration);
-            containerBuilder.RegisterModule(configModule);
-
-            using (var container = containerBuilder.Build())
+            using (var c = b.Build())
             {
-                float a = 3, b = 4;
-
-                foreach (IOperation op in container.Resolve<IList<IOperation>>())
-                {
-                    Console.WriteLine($"{op.GetType().Name} of {a} and {b} = {op.Calculate(a,b)}");
-                }
+                c.Resolve<ConsumerA>().DoWork();
+                c.Resolve<ConsumerB>().DoWork();
             }
         }
     }

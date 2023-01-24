@@ -1,8 +1,0 @@
-{
-  "defaultAssembly": "DI-Playground",
-  "modules" : [
-    {
-      "type" : "DI_Playground.CalculationModule"
-    }
-  ]
-}
