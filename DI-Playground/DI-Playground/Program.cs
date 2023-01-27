@@ -1,49 +1,56 @@
-﻿using Autofac;
+﻿using System.ComponentModel.Composition;
+using Autofac;
+using Autofac.Extras.AttributeMetadata;
+using Autofac.Features.AttributeFilters;
 
 namespace DI_Playground
 {
-    public class ParentWithProperty
+    [MetadataAttribute]
+    public class AgeMetadataAttribute : Attribute
     {
-        public ChildWithProperty Child { get; set; }
+        public int Age { get; set; }
 
-        public override string ToString()
+        public AgeMetadataAttribute(int age)
         {
-            return "parent";
+            Age = age;
         }
     }
 
-    public class ChildWithProperty
+    public interface IArtwork
     {
-        public ParentWithProperty Parent { get; set; }
+        void Display();
+    }
 
-        public override string ToString()
+    [AgeMetadata(100)]
+    public class CenturyArtwork : IArtwork
+    {
+        public void Display()
         {
-            return "child";
+            Console.WriteLine("Displaying a century-old piece");
         }
     }
 
-    public class ParentWithConstructor1
+    [AgeMetadata(1000)]
+    public class MillenialArtwork : IArtwork
     {
-        public ChildWithProperty1 Child;
-
-        public ParentWithConstructor1(ChildWithProperty1 child)
+        public void Display()
         {
-            Child = child;
-        }
-
-        public override string ToString()
-        {
-            return "Parent with a constructor";
+            Console.WriteLine("Displaying a really old piece of art");
         }
     }
 
-    public class ChildWithProperty1
+    public class ArtDisplay
     {
-        public ParentWithConstructor1 Parent { get; set; }
+        private IArtwork _artwork;
 
-        public override string ToString()
+        public ArtDisplay([MetadataFilter("Age", 100)] IArtwork artwork)
         {
-            return "Child";
+            _artwork = artwork;
+        }
+
+        public void Display()
+        {
+            _artwork.Display();
         }
     }
     
@@ -52,31 +59,13 @@ namespace DI_Playground
         static void Main(string[] args)
         {
             var b = new ContainerBuilder();
-            b.RegisterType<ParentWithConstructor1>()
-                .InstancePerLifetimeScope();
-            b.RegisterType<ChildWithProperty1>()
-                .InstancePerLifetimeScope()
-                .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
-
+            b.RegisterModule<AttributedMetadataModule>();
+            b.RegisterType<MillenialArtwork>().As<IArtwork>();
+            b.RegisterType<CenturyArtwork>().As<IArtwork>();
+            b.RegisterType<ArtDisplay>().WithAttributeFiltering();
             using (var c = b.Build())
             {
-                Console.WriteLine(c.Resolve<ParentWithConstructor1>().Child.Parent);
-            }
-        }
-        
-        static void Main_(string[] args)
-        {
-            var b = new ContainerBuilder();
-            b.RegisterType<ParentWithProperty>()
-                .InstancePerLifetimeScope()
-                .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
-            b.RegisterType<ChildWithProperty>()
-                .InstancePerLifetimeScope()
-                .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
-
-            using (var c = b.Build())
-            {
-                Console.WriteLine(c.Resolve<ParentWithProperty>().Child);
+                c.Resolve<ArtDisplay>().Display();
             }
         }
     }
