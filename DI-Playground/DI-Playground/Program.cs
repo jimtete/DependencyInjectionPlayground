@@ -2,48 +2,81 @@
 
 namespace DI_Playground
 {
-    public interface IReportingService
+    public class ParentWithProperty
     {
-        void Report();
-    }
+        public ChildWithProperty Child { get; set; }
 
-    public class ReportingService : IReportingService
-    {
-        public void Report()
+        public override string ToString()
         {
-            Console.WriteLine("Here's your report");
+            return "parent";
         }
     }
 
-    public class ReportingServiceWithLogging : IReportingService
+    public class ChildWithProperty
     {
-        private IReportingService _decorated;
+        public ParentWithProperty Parent { get; set; }
 
-        public ReportingServiceWithLogging(IReportingService decorated)
+        public override string ToString()
         {
-            _decorated = decorated;
-        }
-        public void Report()
-        {
-            Console.WriteLine("Commencing log...");
-            _decorated.Report();
-            Console.WriteLine("... ending log.");
+            return "child";
         }
     }
+
+    public class ParentWithConstructor1
+    {
+        public ChildWithProperty1 Child;
+
+        public ParentWithConstructor1(ChildWithProperty1 child)
+        {
+            Child = child;
+        }
+
+        public override string ToString()
+        {
+            return "Parent with a constructor";
+        }
+    }
+
+    public class ChildWithProperty1
+    {
+        public ParentWithConstructor1 Parent { get; set; }
+
+        public override string ToString()
+        {
+            return "Child";
+        }
+    }
+    
     public class Program
     {
         static void Main(string[] args)
         {
             var b = new ContainerBuilder();
-            b.RegisterType<ReportingService>().Named<IReportingService>("reporting");
-            b.RegisterDecorator<IReportingService>(
-                (context, service) => new ReportingServiceWithLogging(service), "reporting"
-            );
+            b.RegisterType<ParentWithConstructor1>()
+                .InstancePerLifetimeScope();
+            b.RegisterType<ChildWithProperty1>()
+                .InstancePerLifetimeScope()
+                .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
 
             using (var c = b.Build())
             {
-                var r = c.Resolve<IReportingService>();
-                r.Report();
+                Console.WriteLine(c.Resolve<ParentWithConstructor1>().Child.Parent);
+            }
+        }
+        
+        static void Main_(string[] args)
+        {
+            var b = new ContainerBuilder();
+            b.RegisterType<ParentWithProperty>()
+                .InstancePerLifetimeScope()
+                .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
+            b.RegisterType<ChildWithProperty>()
+                .InstancePerLifetimeScope()
+                .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
+
+            using (var c = b.Build())
+            {
+                Console.WriteLine(c.Resolve<ParentWithProperty>().Child);
             }
         }
     }
