@@ -60,3 +60,5 @@
 /home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/net7.0/Autofac.Integration.Mef.dll
 /home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/net7.0/System.ComponentModel.Composition.dll
 /home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/net7.0/System.Security.Permissions.dll
+/home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/net7.0/Autofac.Extras.AggregateService.dll
+/home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/net7.0/Castle.Core.dll

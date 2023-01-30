@@ -46,6 +46,10 @@
               "target": "Package",
               "version": "[6.0.0, )"
             },
+            "Autofac.Extras.AggregateService": {
+              "target": "Package",
+              "version": "[6.1.2, )"
+            },
             "Autofac.Extras.AttributeMetadata": {
               "target": "Package",
               "version": "[6.0.0, )"
