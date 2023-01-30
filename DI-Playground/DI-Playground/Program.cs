@@ -2,93 +2,68 @@
 using Autofac;
 using Autofac.Extras.AggregateService;
 using Autofac.Extras.AttributeMetadata;
+using Autofac.Extras.DynamicProxy;
 using Autofac.Features.AttributeFilters;
+using Castle.DynamicProxy;
 
 namespace DI_Playground
 {
+    public class CallLogger : IInterceptor
+    {
+        private TextWriter _output;
+
+        public CallLogger(TextWriter output)
+        {
+            _output = output;
+        }
+        
+        public void Intercept(IInvocation invocation)
+        {
+            var methodName = invocation.Method.Name;
+            _output.WriteLine("Calling method {0} with args {1}",
+                methodName,
+                string.Join(",",
+                    invocation.Arguments.Select(a => (a ?? "").ToString())
+                )
+            );
+            invocation.Proceed();
+            _output.WriteLine("Done calling {0}, result was {1}",
+                methodName, invocation.ReturnValue
+            );
+        }
+    }
+
+    public interface IAudit
+    {
+        int Start(DateTime reportDate);
+    }
+
+    [Intercept(typeof(CallLogger))]
+    public class Audit : IAudit
+    {
+        public int Start(DateTime reportDate)
+        {
+            Console.WriteLine($"Starting report on {reportDate}");
+            return 42;
+        }
+    }
+    
     public class Program
     {
-        public interface IService1
-        {
-            
-        }
-        
-        public interface IService2
-        {
-            
-        }
-        
-        public interface IService3
-        {
-            
-        }
-        
-        public interface IService4
-        {
-            
-        }
-        
-        public interface IMyAggregateService
-        {
-            IService1 Service1 { get; }
-            IService2 Service2 { get; }
-            IService3 Service3 { get; }
-            /*IService4 Service4 { get; }*/
-
-            IService4 GetFourthService(string name);
-        }
-
-        public class Class1 : IService1
-        {
-            
-        }
-
-        public class Class2 : IService2
-        {
-            
-        }
-
-        public class Class3 : IService3
-        {
-            
-        }
-
-        public class Class4 : IService4
-        {
-            private string _name;
-
-            public Class4(string name)
-            {
-                _name = name;
-            }
-        }
-
-        public class Consumer
-        {
-            public IMyAggregateService AllServices;
-
-            public Consumer(IMyAggregateService allServices)
-            {
-                AllServices = allServices;
-            }
-        }
-        
         static void Main(string[] args)
         {
             var cb = new ContainerBuilder();
-            cb.RegisterAggregateService<IMyAggregateService>();
-            cb.RegisterAssemblyTypes(typeof(Program).Assembly)
-                .Where(t => t.Name.StartsWith("Class"))
-                .AsImplementedInterfaces();
-            cb.RegisterType<Consumer>();
+            cb.Register(c => new CallLogger(Console.Out))
+                .As<IInterceptor>()
+                .AsSelf();
+            cb.RegisterType<Audit>()
+                .EnableClassInterceptors();
 
             using (var container = cb.Build())
             {
-                var consumer = container.Resolve<Consumer>();
-                //Console.WriteLine(consumer.AllServices.Service3.GetType().Name);
-                Console.WriteLine(consumer.AllServices.GetFourthService("test").GetType().Name);
+                var audit = container.Resolve<Audit>();
+                audit.Start(DateTime.Now);
             }
-            
         }
     }
 }

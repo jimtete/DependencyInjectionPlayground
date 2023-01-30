@@ -62,3 +62,4 @@
 /home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/net7.0/System.Security.Permissions.dll
 /home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/net7.0/Autofac.Extras.AggregateService.dll
 /home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/net7.0/Castle.Core.dll
+/home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/net7.0/Autofac.Extras.DynamicProxy.dll

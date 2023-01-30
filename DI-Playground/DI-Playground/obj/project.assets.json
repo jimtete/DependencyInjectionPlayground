@@ -69,6 +69,23 @@
           }
         }
       },
+      "Autofac.Extras.DynamicProxy/6.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Autofac": "6.2.0",
+          "Castle.Core": "4.4.0"
+        },
+        "compile": {
+          "lib/netstandard2.1/Autofac.Extras.DynamicProxy.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.1/Autofac.Extras.DynamicProxy.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Autofac.Mef/6.0.0": {
         "type": "package",
         "dependencies": {
@@ -1920,6 +1937,23 @@
         "lib/netstandard2.0/Autofac.Extras.AttributeMetadata.dll",
         "lib/netstandard2.0/Autofac.Extras.AttributeMetadata.pdb",
         "lib/netstandard2.0/Autofac.Extras.AttributeMetadata.xml"
+      ]
+    },
+    "Autofac.Extras.DynamicProxy/6.0.1": {
+      "sha512": "+ulCOXUjbJ5dljBPZf3gRxQNPRGqg/h1cNTZ4SpXK3qiamTfRsW3gXs2w/IJ+CIDmHrFGYXLqzNd5etvzwB8kA==",
+      "type": "package",
+      "path": "autofac.extras.dynamicproxy/6.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "autofac.extras.dynamicproxy.6.0.1.nupkg.sha512",
+        "autofac.extras.dynamicproxy.nuspec",
+        "icon.png",
+        "lib/netstandard2.0/Autofac.Extras.DynamicProxy.dll",
+        "lib/netstandard2.0/Autofac.Extras.DynamicProxy.xml",
+        "lib/netstandard2.1/Autofac.Extras.DynamicProxy.dll",
+        "lib/netstandard2.1/Autofac.Extras.DynamicProxy.xml"
       ]
     },
     "Autofac.Mef/6.0.0": {
@@ -6098,6 +6132,7 @@
       "Autofac.Configuration >= 6.0.0",
       "Autofac.Extras.AggregateService >= 6.1.2",
       "Autofac.Extras.AttributeMetadata >= 6.0.0",
+      "Autofac.Extras.DynamicProxy >= 6.0.1",
       "Microsoft.Extensions.Configuration.Json >= 7.0.0"
     ]
   },
@@ -6153,6 +6188,10 @@
           "Autofac.Extras.AttributeMetadata": {
             "target": "Package",
             "version": "[6.0.0, )"
+          },
+          "Autofac.Extras.DynamicProxy": {
+            "target": "Package",
+            "version": "[6.0.1, )"
           },
           "Microsoft.Extensions.Configuration.Json": {
             "target": "Package",

@@ -18,6 +18,7 @@
       <PackageReference Include="Autofac.Configuration" Version="6.0.0" />
       <PackageReference Include="Autofac.Extras.AggregateService" Version="6.1.2" />
       <PackageReference Include="Autofac.Extras.AttributeMetadata" Version="6.0.0" />
+      <PackageReference Include="Autofac.Extras.DynamicProxy" Version="6.0.1" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     </ItemGroup>
 

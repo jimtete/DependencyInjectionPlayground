@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "p+hGFjCh7mpPNscm3RIP5DmNkCNRUXQKFQigqj7yOX/O6WF+R5A/gwGBVrp5F++QydSk1jmnNofIKJbKKDMqsA==",
+  "dgSpecHash": "OXeGxBtg2PChigDPoD4NC3zbldBYVgSlboA8M2AKVH2ckc41aycOt3B9/4d0RIHIXcuEOxipaig+TJdGYuyzFQ==",
   "success": true,
   "projectFilePath": "/home/ADDC/jimtete/GitHub/DependencyInjectionPlayground/DI-Playground/DI-Playground/DI-Playground.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "/home/ADDC/jimtete/.nuget/packages/autofac.configuration/6.0.0/autofac.configuration.6.0.0.nupkg.sha512",
     "/home/ADDC/jimtete/.nuget/packages/autofac.extras.aggregateservice/6.1.2/autofac.extras.aggregateservice.6.1.2.nupkg.sha512",
     "/home/ADDC/jimtete/.nuget/packages/autofac.extras.attributemetadata/6.0.0/autofac.extras.attributemetadata.6.0.0.nupkg.sha512",
+    "/home/ADDC/jimtete/.nuget/packages/autofac.extras.dynamicproxy/6.0.1/autofac.extras.dynamicproxy.6.0.1.nupkg.sha512",
     "/home/ADDC/jimtete/.nuget/packages/autofac.mef/6.0.0/autofac.mef.6.0.0.nupkg.sha512",
     "/home/ADDC/jimtete/.nuget/packages/castle.core/4.4.1/castle.core.4.4.1.nupkg.sha512",
     "/home/ADDC/jimtete/.nuget/packages/microsoft.extensions.configuration/7.0.0/microsoft.extensions.configuration.7.0.0.nupkg.sha512",
